@@ -32,6 +32,7 @@ async function run() {
     // await client.connect();
 
     const userCollection = client.db("tm-database").collection("users");
+    const taskCollection = client.db("tm-database").collection("tasks");
 
 
     // jwt related api
@@ -46,6 +47,13 @@ async function run() {
       res.send(result);
     })
 
+        app.get('/myTask/:email', async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email }
+      const task = await taskCollection.find(query).toArray()
+      res.send(task)
+    })
+
     app.post('/users', async (req, res) => {
       const user = req.body;
 
@@ -55,6 +63,12 @@ async function run() {
         return res.status(400).json({ error: 'User with this email already exists' });
       }
       const result = await userCollection.insertOne(user);
+      res.send(result);
+    });
+    app.post('/addTask', async (req, res) => {
+      const task = req.body;
+     
+      const result = await taskCollection.insertOne(task);
       res.send(result);
     });
 
